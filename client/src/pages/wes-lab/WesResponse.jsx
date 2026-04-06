@@ -1,23 +1,14 @@
 import { useState, useEffect } from 'react';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cell, LabelList
+  BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, LabelList
 } from 'recharts';
 import FilterBar from '../../components/FilterBar.jsx';
 import { getFilters, getCategories, getQuestions, getResponse, getResponseTable } from '../../lib/api.js';
 import {
   MOCK_FILTERS, MOCK_CATEGORIES, MOCK_QUESTIONS, MOCK_RESPONSE_CHART, MOCK_SUMMARY
 } from '../../lib/mockData.js';
+import { getValueColor } from '../../constants/colors.js';
 import styles from './WesResponse.module.css';
-
-// Color palette for response values
-const VALUE_COLORS = [
-  '#2D3561', '#C87DA8', '#6B3FA0', '#009FDB', '#F6A623',
-  '#4CAF50', '#E53935', '#00838F', '#FF7043', '#8D6E63'
-];
-
-function getColor(index) {
-  return VALUE_COLORS[index % VALUE_COLORS.length];
-}
 
 export default function WesResponse() {
   const [filters, setFilters] = useState({ country: 'All', province: 'All' });
@@ -195,7 +186,7 @@ export default function WesResponse() {
                       formatter={(val) => <span style={{ color: 'var(--gray-700)' }}>{val}</span>}
                     />
                     {valueKeys.map((key, i) => (
-                      <Bar key={key} dataKey={key} stackId="a" fill={getColor(i)} radius={i === valueKeys.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]}>
+                      <Bar key={key} dataKey={key} stackId="a" fill={getValueColor(i)} radius={i === valueKeys.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]}>
                         <LabelList dataKey={key} position="center" style={{ fill: 'white', fontSize: 12, fontWeight: 600, fontFamily: 'Barlow' }} />
                       </Bar>
                     ))}

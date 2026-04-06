@@ -2,25 +2,8 @@ import { useState, useEffect } from 'react';
 import FilterBar from '../../components/FilterBar.jsx';
 import { getFilters, getSummary } from '../../lib/api.js';
 import { MOCK_FILTERS, MOCK_SUMMARY } from '../../lib/mockData.js';
+import { getCountryStyle } from '../../constants/colors.js';
 import styles from './WesSummary.module.css';
-
-// Country color palette matching the screenshots
-const COUNTRY_COLORS = {
-  DRC:     { bg: '#2D3561', text: '#fff' },
-  SENEGAL: { bg: '#C87DA8', text: '#fff' },
-  Uganda:  { bg: '#6B3FA0', text: '#fff' },
-};
-
-function getCountryStyle(country, index) {
-  if (COUNTRY_COLORS[country]) return COUNTRY_COLORS[country];
-  const palettes = [
-    { bg: '#009FDB', text: '#fff' },
-    { bg: '#4CAF50', text: '#fff' },
-    { bg: '#FF7043', text: '#fff' },
-    { bg: '#00838F', text: '#fff' },
-  ];
-  return palettes[index % palettes.length];
-}
 
 export default function WesSummary() {
   const [filters, setFilters] = useState({ country: 'All', province: 'All' });
