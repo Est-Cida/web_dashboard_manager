@@ -12,6 +12,18 @@ export const DASHBOARDS = [
     accent:      '#009FDB',
   },
   {
+    id:          'wes-subnational',
+    title:       'Sub-National Wastewater Surveillance Assessment',
+    subtitle:    'WES Management Support Team',
+    description: 'Assess sub-national wastewater surveillance capacity at province and site level across WHO African Region Member States.',
+    tags:        ['Sub-National', 'Wastewater', 'Surveillance'],
+    version:     '2025v1',
+    countries:   2,
+    sites:       75,
+    route:       '/wes-subnational',
+    accent:      '#C87DA8',
+  },
+  {
     id:          'wes-national',
     title:       'National Wastewater Surveillance Assessment',
     subtitle:    'WES Management Support Team',

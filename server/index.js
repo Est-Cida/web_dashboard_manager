@@ -7,6 +7,13 @@ const questionsRouter  = require('./routes/questions');
 const responseRouter   = require('./routes/response');
 const summaryRouter    = require('./routes/summary');
 
+// SubNational routes
+const subFiltersRouter    = require('./routes/subnational/filters');
+const subCategoriesRouter = require('./routes/subnational/categories');
+const subQuestionsRouter  = require('./routes/subnational/questions');
+const subResponseRouter   = require('./routes/subnational/response');
+const subSummaryRouter    = require('./routes/subnational/summary');
+
 // National routes
 const natFiltersRouter    = require('./routes/national/filters');
 const natCategoriesRouter = require('./routes/national/categories');
@@ -31,6 +38,13 @@ app.use('/api/national/categories',  natCategoriesRouter);
 app.use('/api/national/questions',   natQuestionsRouter);
 app.use('/api/national/response',    natResponseRouter);
 app.use('/api/national/summary',     natSummaryRouter);
+
+// WES SubNational routes
+app.use('/api/subnational/filters',    subFiltersRouter);
+app.use('/api/subnational/categories', subCategoriesRouter);
+app.use('/api/subnational/questions',  subQuestionsRouter);
+app.use('/api/subnational/response',   subResponseRouter);
+app.use('/api/subnational/summary',    subSummaryRouter);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`WES API server running on port ${PORT}`));
