@@ -162,7 +162,7 @@ export default function WesResponse() {
                     checked={selectedQ === q.QuestionCode}
                     onChange={() => setSelectedQ(q.QuestionCode)}
                   />
-                  <span>{q.QuestionCode} – {q.Question}</span>
+                  <span>{q.Question}</span>
                 </label>
               ))}
             </div>
@@ -216,7 +216,7 @@ export default function WesResponse() {
                   <thead>
                     <tr>
                       <th>Country</th>
-                      <th>{selectedQ} – {currentQuestion?.Question}</th>
+                      <th>{currentQuestion?.Question}</th>
                     </tr>
                   </thead>
                   <tbody>

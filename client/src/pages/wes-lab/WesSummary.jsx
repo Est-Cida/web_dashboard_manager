@@ -81,8 +81,7 @@ export default function WesSummary() {
           <section key={cat.code} className={styles.section}>
             {/* Category header */}
             <div className={styles.catHeader}>
-              <span className={styles.catCode}>{cat.code}</span>
-              <span className={styles.catLabel}>{cat.label}</span>
+              {cat.label}
             </div>
 
             {/* Country legend */}
@@ -102,11 +101,10 @@ export default function WesSummary() {
             <div className={styles.matrixWrap}>
               <table className={styles.matrix}>
                 <tbody>
-                  {cat.questions.map((q) => (
-                    <tr key={q.code} className={styles.matrixRow}>
+                  {cat.questions.map((q, qi) => (
+                    <tr key={qi} className={styles.matrixRow}>
                       <td className={styles.qLabel}>
-                        <span className={styles.qCode}>{q.code}</span>
-                        <span className={styles.qText}>– {q.label}</span>
+                        {q.label}
                       </td>
                       {summary.countries.map((country, ci) => {
                         const val = q.responses[country];

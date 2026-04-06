@@ -15,28 +15,23 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD || '',
 });
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// WES_Laboratory_DataEqualWeight column reference:
+//   "FileLanguage"     — 'English' | 'French' | 'Portuguese'
+//   "CategoryCode"     — e.g. '01 - essns'
+//   "CategoryLanguage" — e.g. '01 - ES Samples, Sampling and Sites'
+//   "QuestionKey"      — e.g. 'essns_sample_method'
+//   "Question"         — e.g. '1.01 - What is your sampling method?'
+//   "AdminLevelName"   — country name
+//   "Province"
+//   "Value"
 
-function buildWhere(filters) {
-  const clauses = [];
-  const values = [];
-  let i = 1;
-  if (filters.country && filters.country !== 'All') {
-    clauses.push(`country = $${i++}`);
-    values.push(filters.country);
-  }
-  if (filters.province && filters.province !== 'All') {
-    clauses.push(`province = $${i++}`);
-    values.push(filters.province);
-  }
-  if (filters.category) {
-    clauses.push(`"CategoryCode" = $${i++}`);
-    values.push(filters.category);
-  }
-  return {
-    where: clauses.length ? 'WHERE ' + clauses.join(' AND ') : '',
-    values,
-  };
+const TABLE = '"WES_Laboratory_DataEqualWeight"';
+const EN    = `"FileLanguage" = 'English'`;   // English-only filter
+
+// Format country name: underscores → spaces, each word capitalised
+function fmtCountry(name) {
+  if (!name) return name;
+  return name.replace(/_/g, ' ').replace(/\w+/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
 }
 
 // ─── Routes ─────────────────────────────────────────────────────────────────
@@ -44,15 +39,13 @@ function buildWhere(filters) {
 // GET /api/filters — distinct countries and provinces
 app.get('/api/filters', async (req, res) => {
   try {
-    const countries = await pool.query(
-      'SELECT DISTINCT country FROM WES_Laboratory_DataEqualWeight ORDER BY country'
-    );
-    const provinces = await pool.query(
-      'SELECT DISTINCT province FROM WES_Laboratory_DataEqualWeight WHERE province IS NOT NULL ORDER BY province'
-    );
+    const [countries, provinces] = await Promise.all([
+      pool.query(`SELECT DISTINCT "AdminLevelName" AS country FROM ${TABLE} ORDER BY "AdminLevelName"`),
+      pool.query(`SELECT DISTINCT "Province" AS province FROM ${TABLE} WHERE "Province" IS NOT NULL ORDER BY "Province"`),
+    ]);
     res.json({
-      countries: ['All', ...countries.rows.map((r) => r.country)],
-      provinces: ['All', ...provinces.rows.map((r) => r.province)],
+      countries: ['All', ...countries.rows.map((r) => fmtCountry(r.country))],
+      provinces: ['All', ...provinces.rows.map((r) => fmtCountry(r.province))],
     });
   } catch (err) {
     console.error(err);
@@ -60,12 +53,13 @@ app.get('/api/filters', async (req, res) => {
   }
 });
 
-// GET /api/categories — distinct categories
+// GET /api/categories — distinct categories, English labels only
 app.get('/api/categories', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT DISTINCT "CategoryCode", "CategoryLabel"
-       FROM WES_Laboratory_DataEqualWeight
+      `SELECT DISTINCT "CategoryCode", "CategoryLanguage" AS "CategoryLabel"
+       FROM ${TABLE}
+       WHERE ${EN}
        ORDER BY "CategoryCode"`
     );
     res.json(result.rows);
@@ -75,15 +69,15 @@ app.get('/api/categories', async (req, res) => {
   }
 });
 
-// GET /api/questions — sub-category questions for a category
+// GET /api/questions — distinct questions for a category, English labels only
 app.get('/api/questions', async (req, res) => {
   try {
     const { category } = req.query;
     const result = await pool.query(
-      `SELECT DISTINCT "QuestionCode", "Question"
-       FROM WES_Laboratory_DataEqualWeight
-       WHERE "CategoryCode" = $1
-       ORDER BY "QuestionCode"`,
+      `SELECT DISTINCT "QuestionKey" AS "QuestionCode", "Question"
+       FROM ${TABLE}
+       WHERE ${EN} AND "CategoryCode" = $1
+       ORDER BY "QuestionKey"`,
       [category]
     );
     res.json(result.rows);
@@ -97,33 +91,28 @@ app.get('/api/questions', async (req, res) => {
 app.get('/api/response', async (req, res) => {
   try {
     const { country, province, question } = req.query;
-    let baseWhere = question ? `WHERE "QuestionCode" = $1` : 'WHERE 1=1';
-    const baseValues = question ? [question] : [];
-    let idx = baseValues.length + 1;
+    const values = [];
+    let idx = 1;
+    const clauses = [`${EN}`];
 
-    if (country && country !== 'All') {
-      baseWhere += ` AND country = $${idx++}`;
-      baseValues.push(country);
-    }
-    if (province && province !== 'All') {
-      baseWhere += ` AND province = $${idx++}`;
-      baseValues.push(province);
-    }
+    if (question)                      { clauses.push(`"QuestionKey" = $${idx++}`);      values.push(question); }
+    if (country && country !== 'All')  { clauses.push(`"AdminLevelName" = $${idx++}`);   values.push(country); }
+    if (province && province !== 'All'){ clauses.push(`"Province" = $${idx++}`);         values.push(province); }
 
     const result = await pool.query(
-      `SELECT country, "Value" as value, COUNT(*) as count
-       FROM WES_Laboratory_DataEqualWeight
-       ${baseWhere}
-       GROUP BY country, "Value"
-       ORDER BY country, "Value"`,
-      baseValues
+      `SELECT "AdminLevelName" AS country, "Value" AS value, COUNT(*) AS count
+       FROM ${TABLE}
+       WHERE ${clauses.join(' AND ')}
+       GROUP BY "AdminLevelName", "Value"
+       ORDER BY "AdminLevelName", "Value"`,
+      values
     );
 
-    // Transform to recharts stacked bar format: [{country, value1: n, value2: n}]
     const byCountry = {};
     for (const row of result.rows) {
-      if (!byCountry[row.country]) byCountry[row.country] = { country: row.country };
-      byCountry[row.country][row.value] = Number(row.count);
+      const c = fmtCountry(row.country);
+      if (!byCountry[c]) byCountry[c] = { country: c };
+      byCountry[c][row.value] = Number(row.count);
     }
 
     res.json(Object.values(byCountry));
@@ -137,88 +126,68 @@ app.get('/api/response', async (req, res) => {
 app.get('/api/response-table', async (req, res) => {
   try {
     const { country, province, question } = req.query;
-    let baseWhere = question ? `WHERE "QuestionCode" = $1` : 'WHERE 1=1';
-    const baseValues = question ? [question] : [];
-    let idx = baseValues.length + 1;
+    const values = [];
+    let idx = 1;
+    const clauses = [`${EN}`];
 
-    if (country && country !== 'All') {
-      baseWhere += ` AND country = $${idx++}`;
-      baseValues.push(country);
-    }
-    if (province && province !== 'All') {
-      baseWhere += ` AND province = $${idx++}`;
-      baseValues.push(province);
-    }
+    if (question)                      { clauses.push(`"QuestionKey" = $${idx++}`);      values.push(question); }
+    if (country && country !== 'All')  { clauses.push(`"AdminLevelName" = $${idx++}`);   values.push(country); }
+    if (province && province !== 'All'){ clauses.push(`"Province" = $${idx++}`);         values.push(province); }
 
     const result = await pool.query(
-      `SELECT country, "Value" as value
-       FROM WES_Laboratory_DataEqualWeight
-       ${baseWhere}
-       ORDER BY country`,
-      baseValues
+      `SELECT "AdminLevelName" AS country, "Value" AS value
+       FROM ${TABLE}
+       WHERE ${clauses.join(' AND ')}
+       ORDER BY "AdminLevelName"`,
+      values
     );
-    res.json(result.rows);
+    res.json(result.rows.map((r) => ({ ...r, country: fmtCountry(r.country) })));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// GET /api/summary — full summary matrix by category
+// GET /api/summary — summary matrix, English rows only (no duplicates)
 app.get('/api/summary', async (req, res) => {
   try {
     const { country, province } = req.query;
-    let baseWhere = 'WHERE 1=1';
-    const baseValues = [];
+    const values = [];
     let idx = 1;
+    const clauses = [`${EN}`];
 
-    if (country && country !== 'All') {
-      baseWhere += ` AND country = $${idx++}`;
-      baseValues.push(country);
-    }
-    if (province && province !== 'All') {
-      baseWhere += ` AND province = $${idx++}`;
-      baseValues.push(province);
-    }
+    if (country && country !== 'All')  { clauses.push(`"AdminLevelName" = $${idx++}`); values.push(country); }
+    if (province && province !== 'All'){ clauses.push(`"Province" = $${idx++}`);        values.push(province); }
 
-    // Get all questions with their answers per country
     const result = await pool.query(
-      `SELECT "CategoryCode", "CategoryLabel", "QuestionCode", "Question",
-              country, "Value" as value
-       FROM WES_Laboratory_DataEqualWeight
-       ${baseWhere}
-       ORDER BY "CategoryCode", "QuestionCode", country`,
-      baseValues
+      `SELECT "CategoryCode", "CategoryLanguage" AS "CategoryLabel",
+              "QuestionKey", "Question",
+              "AdminLevelName" AS country, "Value" AS value
+       FROM ${TABLE}
+       WHERE ${clauses.join(' AND ')}
+       ORDER BY "CategoryCode", "QuestionKey", "AdminLevelName"`,
+      values
     );
 
-    // Group: category -> questions -> country values
     const categories = {};
     for (const row of result.rows) {
       if (!categories[row.CategoryCode]) {
-        categories[row.CategoryCode] = {
-          code: row.CategoryCode,
-          label: row.CategoryLabel,
-          questions: {},
-        };
+        categories[row.CategoryCode] = { code: row.CategoryCode, label: row.CategoryLabel, questions: {} };
       }
       const cat = categories[row.CategoryCode];
-      if (!cat.questions[row.QuestionCode]) {
-        cat.questions[row.QuestionCode] = {
-          code: row.QuestionCode,
-          label: row.Question,
-          responses: {},
-        };
+      if (!cat.questions[row.QuestionKey]) {
+        cat.questions[row.QuestionKey] = { label: row.Question, responses: {} };
       }
-      cat.questions[row.QuestionCode].responses[row.country] = row.value;
+      cat.questions[row.QuestionKey].responses[fmtCountry(row.country)] = row.value;
     }
 
-    // Collect unique countries
-    const countriesSet = new Set(result.rows.map((r) => r.country));
+    const countriesSet = new Set(result.rows.map((r) => fmtCountry(r.country)));
 
     res.json({
       countries: [...countriesSet].sort(),
       categories: Object.values(categories).map((c) => ({
-        ...c,
+        code: c.code,
+        label: c.label,
         questions: Object.values(c.questions),
       })),
     });
