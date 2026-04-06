@@ -1,7 +1,19 @@
+import { useState } from 'react';
 import { DASHBOARDS } from '../constants/dashboards';
 import styles from './Landing.module.css';
 
 export default function Landing() {
+  const [query, setQuery] = useState('');
+
+  const filtered = DASHBOARDS.filter(d => {
+    const q = query.toLowerCase();
+    return (
+      d.title.toLowerCase().includes(q) ||
+      d.subtitle.toLowerCase().includes(q) ||
+      d.tags.some(t => t.toLowerCase().includes(q))
+    );
+  });
+
   return (
     <div className={styles.page}>
       {/* Header */}
@@ -31,6 +43,23 @@ export default function Landing() {
           <p className={styles.heroSub}>
             Data-driven dashboards supporting outbreak response and health surveillance across the WHO African Region.
           </p>
+          <div className={styles.searchWrap}>
+            <svg className={styles.searchIcon} viewBox="0 0 20 20" fill="none">
+              <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.8"/>
+              <path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+            </svg>
+            <input
+              className={styles.searchInput}
+              type="text"
+              placeholder="Search dashboards…"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              autoComplete="off"
+            />
+            {query && (
+              <button className={styles.searchClear} onClick={() => setQuery('')} aria-label="Clear">✕</button>
+            )}
+          </div>
         </div>
         <div className={styles.heroPattern} aria-hidden="true">
           {Array.from({ length: 64 }).map((_, i) => (
@@ -41,9 +70,11 @@ export default function Landing() {
 
       {/* Dashboard cards */}
       <main className={styles.main}>
-        <div className={styles.sectionLabel}>Available Dashboards</div>
+        <div className={styles.sectionLabel}>
+          {query ? `${filtered.length} result${filtered.length !== 1 ? 's' : ''} for "${query}"` : 'Available Dashboards'}
+        </div>
         <div className={styles.grid}>
-          {DASHBOARDS.map(dash => (
+          {filtered.map(dash => (
             <div
               key={dash.id}
               className={`${styles.card} ${!dash.route ? styles.disabled : ''}`}
