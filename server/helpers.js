@@ -43,4 +43,9 @@ function cmpQuestions(a, b) {
   return (a.Question || a.label || '').localeCompare(b.Question || b.label || '');
 }
 
-module.exports = { TABLE, EN, fmtCountry, cmpQuestions };
+// SQL expressions that normalize stored values to match formatted filter params.
+// LOWER(REPLACE("AdminLevelName", '_', ' ')) = LOWER($n)
+const SQL_COUNTRY  = `LOWER(REPLACE("AdminLevelName", '_', ' '))`;
+const SQL_PROVINCE = `LOWER(REPLACE("Province", '_', ' '))`;
+
+module.exports = { TABLE, EN, fmtCountry, cmpQuestions, SQL_COUNTRY, SQL_PROVINCE };

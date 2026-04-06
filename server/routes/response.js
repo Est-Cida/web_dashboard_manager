@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const pool = require('../db');
-const { TABLE, EN, fmtCountry } = require('../helpers');
+const { TABLE, EN, fmtCountry, SQL_COUNTRY, SQL_PROVINCE } = require('../helpers');
 
 const router = Router();
 
@@ -12,9 +12,9 @@ router.get('/', async (req, res) => {
     let   idx     = 1;
     const clauses = [EN];
 
-    if (question)                       { clauses.push(`"QuestionKey" = $${idx++}`);    values.push(question); }
-    if (country  && country  !== 'All') { clauses.push(`"AdminLevelName" = $${idx++}`); values.push(country); }
-    if (province && province !== 'All') { clauses.push(`"Province" = $${idx++}`);       values.push(province); }
+    if (question)                       { clauses.push(`"QuestionKey" = $${idx++}`);              values.push(question); }
+    if (country  && country  !== 'All') { clauses.push(`${SQL_COUNTRY} = LOWER($${idx++})`);      values.push(country); }
+    if (province && province !== 'All') { clauses.push(`${SQL_PROVINCE} = LOWER($${idx++})`);     values.push(province); }
 
     const result = await pool.query(
       `SELECT "AdminLevelName" AS country, "Value" AS value, COUNT(*) AS count
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/response-table — flat country/value table
+// GET /api/response/table — flat country/value table
 router.get('/table', async (req, res) => {
   try {
     const { country, province, question } = req.query;
@@ -47,9 +47,9 @@ router.get('/table', async (req, res) => {
     let   idx     = 1;
     const clauses = [EN];
 
-    if (question)                       { clauses.push(`"QuestionKey" = $${idx++}`);    values.push(question); }
-    if (country  && country  !== 'All') { clauses.push(`"AdminLevelName" = $${idx++}`); values.push(country); }
-    if (province && province !== 'All') { clauses.push(`"Province" = $${idx++}`);       values.push(province); }
+    if (question)                       { clauses.push(`"QuestionKey" = $${idx++}`);              values.push(question); }
+    if (country  && country  !== 'All') { clauses.push(`${SQL_COUNTRY} = LOWER($${idx++})`);      values.push(country); }
+    if (province && province !== 'All') { clauses.push(`${SQL_PROVINCE} = LOWER($${idx++})`);     values.push(province); }
 
     const result = await pool.query(
       `SELECT "AdminLevelName" AS country, "Value" AS value
