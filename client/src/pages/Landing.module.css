@@ -1,0 +1,280 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--gray-100);
+}
+
+/* ── Header ── */
+.header {
+  background: var(--who-blue-darker);
+  padding: 0 40px;
+}
+
+.headerInner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 64px;
+  display: flex;
+  align-items: center;
+}
+
+.logoRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.whoLogo {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.orgName {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: white;
+  letter-spacing: 0.02em;
+}
+
+.orgRegion {
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.04em;
+  margin-top: 1px;
+}
+
+/* ── Hero ── */
+.hero {
+  background: var(--who-blue-darker);
+  padding: 56px 40px 64px;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroContent {
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.heroTitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 700;
+  color: white;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+.heroSub {
+  font-size: 16px;
+  color: rgba(255,255,255,0.72);
+  max-width: 520px;
+  line-height: 1.65;
+}
+
+.heroPattern {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 12px;
+  opacity: 0.12;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: white;
+}
+
+/* ── Main ── */
+.main {
+  flex: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 40px 40px 60px;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 20px;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--white);
+  border-radius: 10px;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.card:hover:not(.disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.card.disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.cardAccent {
+  height: 4px;
+  background: var(--accent, var(--who-blue));
+  width: 100%;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+}
+
+.cardVersion {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+}
+
+.cardTags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: var(--who-blue-pale);
+  color: var(--who-blue-dark);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.cardTitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gray-900);
+  line-height: 1.25;
+  padding: 12px 20px 2px;
+  letter-spacing: -0.01em;
+}
+
+.cardSub {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-400);
+  padding: 0 20px;
+}
+
+.cardDesc {
+  font-size: 13px;
+  color: var(--gray-600);
+  line-height: 1.6;
+  padding: 12px 20px;
+  flex: 1;
+}
+
+.cardStats {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.cardStat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px;
+  gap: 2px;
+  border-right: 1px solid var(--gray-200);
+}
+
+.cardStat:last-child { border-right: none; }
+
+.cardStatVal {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent, var(--who-blue-darker));
+  line-height: 1;
+}
+
+.cardStatLabel {
+  font-size: 11px;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+.cardFooter {
+  padding: 14px 20px;
+}
+
+.openBtn {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--who-blue-dark);
+  letter-spacing: 0.02em;
+}
+
+.card:hover:not(.disabled) .openBtn {
+  color: var(--who-blue-darker);
+}
+
+.comingSoon {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Footer ── */
+.footer {
+  border-top: 1px solid var(--gray-200);
+  padding: 20px 40px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--gray-400);
+  background: var(--white);
+}

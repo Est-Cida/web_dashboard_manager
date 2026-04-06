@@ -1,0 +1,99 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--gray-100);
+}
+
+.header {
+  height: var(--header-h);
+  background: var(--who-blue-darker);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.whoLogo {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+}
+
+.orgText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.orgName {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: white;
+  letter-spacing: 0.02em;
+}
+
+.orgRegion {
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.04em;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 32px;
+  flex: 1;
+}
+
+.navLink {
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.75);
+  border-radius: 20px;
+  transition: all var(--transition);
+  letter-spacing: 0.02em;
+}
+
+.navLink:hover {
+  color: white;
+  background: rgba(255,255,255,0.12);
+}
+
+.navLink.active {
+  color: white;
+  background: rgba(255,255,255,0.2);
+}
+
+.headerRight {
+  margin-left: auto;
+}
+
+.dashTitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
