@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Labe
 import FilterBar from '../../components/FilterBar.jsx';
 import { getSubFilters, getSubCategories, getSubQuestions, getSubResponse, getSubResponseTable } from '../../lib/api.js';
 import { getValueColor } from '../../constants/colors.js';
-import styles from '../wes-lab/WesResponse.module.css';
+import styles from './WesSubNationalResponse.module.css';
 
 export default function WesSubNationalResponse() {
   const [filters, setFilters]             = useState({ country: 'All', province: 'All' });

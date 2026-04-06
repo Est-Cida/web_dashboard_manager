@@ -1,0 +1,164 @@
+.page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero {
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(0,90,142,0.88) 0%, rgba(0,90,142,0.72) 50%, rgba(107,63,160,0.6) 100%),
+    url('/lab-bg.jpg') center/cover no-repeat;
+  background-color: var(--who-blue-darker);
+  padding: 64px 72px;
+  min-height: 380px;
+  display: flex;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0,90,142,0.95) 0%,
+    rgba(0,90,142,0.7) 60%,
+    rgba(0,90,142,0.3) 100%
+  );
+  pointer-events: none;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  max-width: 680px;
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.85);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700;
+  color: white;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 28px;
+  letter-spacing: 0.02em;
+}
+
+.divider {
+  width: 48px;
+  height: 3px;
+  background: rgba(255,255,255,0.5);
+  margin-bottom: 24px;
+  border-radius: 2px;
+}
+
+.body {
+  font-size: 15px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.65;
+  max-width: 600px;
+}
+
+.body + .body {
+  margin-top: 14px;
+}
+
+.logoWrap {
+  position: absolute;
+  right: 72px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+  opacity: 0.9;
+}
+
+.whoLogo {
+  width: 90px;
+  height: 90px;
+}
+
+.orgName {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+.orgRegion {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.04em;
+}
+
+.statsRow {
+  display: flex;
+  border-top: 3px solid var(--who-blue);
+}
+
+.stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 20px;
+  background: var(--white);
+  border-right: 1px solid var(--gray-200);
+  gap: 6px;
+  transition: background var(--transition);
+}
+
+.stat:last-child { border-right: none; }
+
+.stat:hover { background: var(--who-blue-pale); }
+
+.statValue {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--who-blue-darker);
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+@media (max-width: 768px) {
+  .hero { padding: 40px 24px; min-height: auto; }
+  .logoWrap { display: none; }
+  .statsRow { flex-wrap: wrap; }
+  .stat { flex: 1 1 50%; border-bottom: 1px solid var(--gray-200); }
+}

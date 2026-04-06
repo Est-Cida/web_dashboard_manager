@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import FilterBar from '../../components/FilterBar.jsx';
 import { getSubFilters, getSubSummary } from '../../lib/api.js';
 import { getCountryStyle } from '../../constants/colors.js';
-import styles from '../wes-lab/WesSummary.module.css';
+import styles from './WesSubNationalSummary.module.css';
 
 export default function WesSubNationalSummary() {
   const [filters, setFilters]             = useState({ country: 'All', province: 'All' });

@@ -1,4 +1,4 @@
-import styles from '../wes-lab/WesHome.module.css';
+import styles from './WesSubNationalHome.module.css';
 
 export default function WesSubNationalHome() {
   return (
