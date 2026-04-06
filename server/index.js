@@ -34,6 +34,32 @@ function fmtCountry(name) {
   return name.replace(/_/g, ' ').replace(/\w+/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
 }
 
+// Sort questions by numeric prefix then alphabetically.
+// Parses "1.03a - ..." → [1, 3, 'a'] for multi-level comparison.
+function parseNumPrefix(question) {
+  const m = (question || '').match(/^([\d.]+[a-z]?)/i);
+  if (!m) return [Infinity, '', question];
+  const raw = m[1];
+  const letter = raw.match(/[a-z]$/i) ? raw.slice(-1).toLowerCase() : '';
+  const nums = raw.replace(/[a-z]$/i, '').split('.').map(Number);
+  return [...nums, letter];
+}
+
+function cmpQuestions(a, b) {
+  // Support both {Question} (from /api/questions) and {label} (from /api/summary)
+  const pa = parseNumPrefix(a.Question || a.label);
+  const pb = parseNumPrefix(b.Question || b.label);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const av = pa[i] ?? (typeof pb[i] === 'number' ? -Infinity : '');
+    const bv = pb[i] ?? (typeof pa[i] === 'number' ? -Infinity : '');
+    if (av < bv) return -1;
+    if (av > bv) return 1;
+  }
+  const at = a.Question || a.label || '';
+  const bt = b.Question || b.label || '';
+  return at.localeCompare(bt);
+}
+
 // ─── Routes ─────────────────────────────────────────────────────────────────
 
 // GET /api/filters — distinct countries and provinces
@@ -80,7 +106,7 @@ app.get('/api/questions', async (req, res) => {
        ORDER BY "QuestionKey"`,
       [category]
     );
-    res.json(result.rows);
+    res.json(result.rows.sort(cmpQuestions));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -188,7 +214,7 @@ app.get('/api/summary', async (req, res) => {
       categories: Object.values(categories).map((c) => ({
         code: c.code,
         label: c.label,
-        questions: Object.values(c.questions),
+        questions: Object.values(c.questions).sort(cmpQuestions),
       })),
     });
   } catch (err) {

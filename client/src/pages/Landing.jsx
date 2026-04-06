@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import styles from './Landing.module.css';
 
 const DASHBOARDS = [
@@ -41,8 +40,6 @@ const DASHBOARDS = [
 ];
 
 export default function Landing() {
-  const navigate = useNavigate();
-
   return (
     <div className={styles.page}>
       {/* Header */}
@@ -88,7 +85,7 @@ export default function Landing() {
             <div
               key={dash.id}
               className={`${styles.card} ${!dash.route ? styles.disabled : ''}`}
-              onClick={() => dash.route && navigate(dash.route)}
+              onClick={() => dash.route && window.open(dash.route, '_blank')}
               style={{ '--accent': dash.accent }}
             >
               <div className={styles.cardAccent} />
