@@ -12,6 +12,18 @@ export const DASHBOARDS = [
     accent:      '#009FDB',
   },
   {
+    id:          'wes-national',
+    title:       'National Wastewater Surveillance Assessment',
+    subtitle:    'WES Management Support Team',
+    description: 'Assess national wastewater surveillance capacity across WHO African Region Member States.',
+    tags:        ['National', 'Wastewater', 'Surveillance'],
+    version:     '2025v1',
+    countries:   3,
+    sites:       50,
+    route:       '/wes-national',
+    accent:      '#6B3FA0',
+  },
+  {
     id:          'coming-soon-1',
     title:       'Epidemiological Surveillance Dashboard',
     subtitle:    'Disease Intelligence Unit',
